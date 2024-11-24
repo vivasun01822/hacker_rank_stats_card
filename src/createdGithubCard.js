@@ -41,6 +41,11 @@ async function createGithubCard(data, logoPath, outputFile) {
   ctx.closePath();
   ctx.fill();
 
+  // Add a 2px grey border
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#808080"; // Grey color
+  ctx.stroke(); // Draw the border
+
   // Load and draw the HackerRank logo
   const logo = await loadLocalHackerRankLogo(logoPath);
   if (logo) {
