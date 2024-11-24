@@ -24,14 +24,14 @@ async function createGithubCard(data, logoPath, outputFile) {
   const badgesInRow = Math.floor((cardWidth - 40) / (badgeWidth + spaceBetweenBadges));
   const badgeRows = Math.ceil(data.badges.length / badgesInRow);
   const totalCardHeight = yOffsetStart + badgeRows * (badgeWidth + spaceBetweenBadges + 20) + 180;
-  
+
   // Create a canvas with curved corners
   const canvas = createCanvas(cardWidth, totalCardHeight);
   const ctx = canvas.getContext("2d");
 
   // Draw a rounded rectangle for the card background
   const cornerRadius = 20;
-  ctx.fillStyle = "white";
+  ctx.fillStyle = "white"; // Background color
   ctx.beginPath();
   ctx.moveTo(cornerRadius, 0);
   ctx.arcTo(cardWidth, 0, cardWidth, totalCardHeight, cornerRadius);
@@ -41,8 +41,8 @@ async function createGithubCard(data, logoPath, outputFile) {
   ctx.closePath();
   ctx.fill();
 
-  // Add a 2px grey border
-  ctx.lineWidth = 8;
+  // Add a 2px light green border
+  ctx.lineWidth = 5; // light green border width
   ctx.strokeStyle = "#00ab41"; // light green color
   ctx.stroke(); // Draw the border
 
@@ -53,7 +53,7 @@ async function createGithubCard(data, logoPath, outputFile) {
   }
   yOffset += 20;
 
-  // Set default font
+  // Set default font for username and name
   ctx.font = "bold 32px sans-serif";
   ctx.fillStyle = "black";
 
@@ -66,10 +66,11 @@ async function createGithubCard(data, logoPath, outputFile) {
 
   // Add badges section
   ctx.fillText("Badges:", 20, yOffset);
-  yOffset += 20; 
+  yOffset += 20;
 
   let xOffset = 30;
 
+  // Loop through the badges and add them
   for (let i = 0; i < data.badges.length; i++) {
     const badge = data.badges[i];
 
@@ -109,11 +110,11 @@ async function createGithubCard(data, logoPath, outputFile) {
         lines.push(currentLine); // Push the final line
 
         // Draw each line of the wrapped badge title
-        const donwLine = 5;
+        const downLine = 5;
         lines.forEach((lineText, index) => {
           // Center the text below the badge image
           ctx.fillText(lineText, xOffset + (badgeWidth - ctx.measureText(lineText).width) / 2, currentYOffset + index * lineHeight);
-          currentYOffset += donwLine; // Move down for the next line
+          currentYOffset += downLine; // Move down for the next line
         });
 
         // Update position for next badge
