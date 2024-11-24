@@ -42,8 +42,8 @@ async function createGithubCard(data, logoPath, outputFile) {
   ctx.fill();
 
   // Add a 2px grey border
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "#808080"; // Grey color
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = "#00ab41"; // light green color
   ctx.stroke(); // Draw the border
 
   // Load and draw the HackerRank logo
