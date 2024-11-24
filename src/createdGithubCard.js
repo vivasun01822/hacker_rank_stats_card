@@ -23,20 +23,30 @@ async function createGithubCard(data, logoPath, outputFile) {
 
   const badgesInRow = Math.floor((cardWidth - 40) / (badgeWidth + spaceBetweenBadges));
   const badgeRows = Math.ceil(data.badges.length / badgesInRow);
-  const cardHeight = yOffsetStart + badgeRows * (badgeWidth + spaceBetweenBadges + 20) + 180;
-
-  const canvas = createCanvas(cardWidth, cardHeight);
+  const totalCardHeight = yOffsetStart + badgeRows * (badgeWidth + spaceBetweenBadges + 20) + 180;
+  
+  // Create a canvas with curved corners
+  const canvas = createCanvas(cardWidth, totalCardHeight);
   const ctx = canvas.getContext("2d");
 
-  // Set background color
+  // Draw a rounded rectangle for the card background
+  const cornerRadius = 20;
   ctx.fillStyle = "white";
-  ctx.fillRect(0, 0, cardWidth, cardHeight);
+  ctx.beginPath();
+  ctx.moveTo(cornerRadius, 0);
+  ctx.arcTo(cardWidth, 0, cardWidth, totalCardHeight, cornerRadius);
+  ctx.arcTo(cardWidth, totalCardHeight, 0, totalCardHeight, cornerRadius);
+  ctx.arcTo(0, totalCardHeight, 0, 0, cornerRadius);
+  ctx.arcTo(0, 0, cardWidth, 0, cornerRadius);
+  ctx.closePath();
+  ctx.fill();
 
   // Load and draw the HackerRank logo
   const logo = await loadLocalHackerRankLogo(logoPath);
   if (logo) {
     ctx.drawImage(logo, 20, 20, 200, logoHeight);
   }
+  yOffset += 20;
 
   // Set default font
   ctx.font = "bold 32px sans-serif";
