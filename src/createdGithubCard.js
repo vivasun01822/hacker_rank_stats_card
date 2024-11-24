@@ -42,7 +42,7 @@ async function createGithubCard(data, logoPath, outputFile) {
   ctx.fill();
 
   // Add a 2px light green border
-  ctx.lineWidth = 5; // light green border width
+  ctx.lineWidth = 2; // light green border width
   ctx.strokeStyle = "#00ab41"; // light green color
   ctx.stroke(); // Draw the border
 
