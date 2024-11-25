@@ -14,24 +14,30 @@ async function loadLocalHackerRankLogo(logoPath) {
 
 // Create a GitHub-style card
 async function createGithubCard(data, logoPath, outputFile) {
-  const cardWidth = 600; // Fixed attractive size
-  const cardHeight = 300; // Fixed height
+  const cardWidth = 700; // Fixed card size
+  const cardHeight = 400;
   const cardPadding = 20;
-  const badgeSize = 60; // Smaller badge size
-  const badgeSpacing = 30;
-  const logoHeight = 60;
+  const badgeSize = 100; // Reduced hexagon size
+  const badgeSpacing = 25;
+  const logoHeight = 90;
   const yOffsetStart = logoHeight + 40;
   let yOffset = yOffsetStart;
+  const cornerRadius = 20; // Added corner radius for the card
 
   const badgesPerRow = Math.floor((cardWidth - cardPadding * 2) / (badgeSize + badgeSpacing));
-  const rowsNeeded = Math.ceil(data.badges.length / badgesPerRow);
-
   const canvas = createCanvas(cardWidth, cardHeight);
   const ctx = canvas.getContext("2d");
 
-  // Set background color
+  // Set background color with rounded corners
   ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, cardWidth, cardHeight);
+  ctx.beginPath();
+  ctx.moveTo(cornerRadius, 0); // Top-left corner
+  ctx.arcTo(0, 0, 0, cardHeight, cornerRadius);
+  ctx.arcTo(0, cardHeight, cardWidth, cardHeight, cornerRadius);
+  ctx.arcTo(cardWidth, cardHeight, cardWidth, 0, cornerRadius);
+  ctx.arcTo(cardWidth, 0, 0, 0, cornerRadius);
+  ctx.closePath();
+  ctx.fill();
 
   // Draw the HackerRank logo
   const logo = await loadLocalHackerRankLogo(logoPath);
@@ -50,6 +56,9 @@ async function createGithubCard(data, logoPath, outputFile) {
   yOffset += 40;
 
   // Center badges horizontally
+  ctx.font = "18px sans-serif";
+  ctx.fillText(`Badges: `, cardPadding, yOffset);
+  yOffset += 40;
   const totalBadgeWidth = badgesPerRow * badgeSize + (badgesPerRow - 1) * badgeSpacing;
   let xOffset = (cardWidth - totalBadgeWidth) / 2;
 
@@ -62,7 +71,7 @@ async function createGithubCard(data, logoPath, outputFile) {
       const response = await axios.get(badge.icon_url, { responseType: "arraybuffer" });
       const badgeIcon = await loadImage(Buffer.from(response.data));
 
-      // Draw hexagon shape for the badge
+      // Draw rounded hexagon shape for the badge
       const hexCenterX = xOffset + badgeSize / 2;
       const hexCenterY = yOffset + badgeSize / 2;
       const hexRadius = badgeSize / 2;
@@ -72,30 +81,30 @@ async function createGithubCard(data, logoPath, outputFile) {
       gradient.addColorStop(1, "#FFFFFF");
 
       ctx.fillStyle = gradient;
-      drawHexagon(ctx, hexCenterX, hexCenterY, hexRadius);
+      drawRoundedHexagon(ctx, hexCenterX, hexCenterY, hexRadius, 8); // Smaller corner radius
       ctx.fill();
 
-      // Draw the badge icon
-      const iconSize = badgeSize * 0.5;
+      // Draw the smaller badge icon
+      const iconSize = badgeSize * 0.25; // Reduced icon size (25% of badge size)
       ctx.drawImage(
         badgeIcon,
         xOffset + (badgeSize - iconSize) / 2,
-        yOffset + (badgeSize - iconSize) / 2 - 5,
+        yOffset + (badgeSize - iconSize) / 2 - 5, // Reduced vertical offset for icon
         iconSize,
         iconSize
       );
 
-      // Draw the badge title
-      ctx.font = "bold 14px sans-serif";
+      // Insert badge title inside the hexagon
+      ctx.font = "bold 10px sans-serif"; // Smaller font size for title
       ctx.fillStyle = "#333";
       ctx.textAlign = "center";
-      ctx.fillText(badge.title, hexCenterX, yOffset + badgeSize + 15);
+      ctx.fillText(badge.title, hexCenterX, hexCenterY + 18); // Closer to the icon
 
-      // Draw stars
-      const starText = "★".repeat(badge.stars) + "☆".repeat(5 - badge.stars);
-      ctx.font = "14px sans-serif";
-      ctx.fillStyle = "#FFD700";
-      ctx.fillText(starText, hexCenterX, yOffset + badgeSize + 35);
+      // Insert stars inside the hexagon
+      const starText = "★".repeat(badge.stars); // Only show the number of stars earned
+      ctx.font = "10px sans-serif"; // Adjusted font size for stars
+      ctx.fillStyle = "#000000"; // Black stars
+      ctx.fillText(starText, hexCenterX, hexCenterY + 30); // Closer to the title
 
       // Update positions
       xOffset += badgeSize + badgeSpacing;
@@ -116,12 +125,23 @@ async function createGithubCard(data, logoPath, outputFile) {
   console.log(`Card saved as ${outputFile}`);
 }
 
-// Helper function to draw a hexagon
-function drawHexagon(ctx, x, y, radius) {
+// Helper function to draw a rounded hexagon
+function drawRoundedHexagon(ctx, x, y, radius, cornerRadius) {
   ctx.beginPath();
   for (let i = 0; i <= 6; i++) {
     const angle = (Math.PI / 3) * i;
-    ctx.lineTo(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
+    const nextAngle = (Math.PI / 3) * (i + 1);
+
+    const startX = x + (radius - cornerRadius) * Math.cos(angle);
+    const startY = y + (radius - cornerRadius) * Math.sin(angle);
+    const endX = x + (radius - cornerRadius) * Math.cos(nextAngle);
+    const endY = y + (radius - cornerRadius) * Math.sin(nextAngle);
+
+    const cornerX = x + radius * Math.cos(angle);
+    const cornerY = y + radius * Math.sin(angle);
+
+    ctx.lineTo(startX, startY);
+    ctx.arcTo(cornerX, cornerY, endX, endY, cornerRadius);
   }
   ctx.closePath();
 }

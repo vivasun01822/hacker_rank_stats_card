@@ -50,6 +50,9 @@ async function fetchHackerrankData(username) {
       });
     });
 
+    // Sort badges by stars in descending order
+    badges.sort((a, b) => b.stars - a.stars);
+
     // Return structured data
     return {
       username,
