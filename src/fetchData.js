@@ -32,8 +32,11 @@ async function fetchHackerrankData(username) {
       // Badge icon URL
       const badgeIcon = badgeElement.find(".badge-icon");
       const badgeIconUrl = badgeIcon.attr("href") || "N/A";
-      // Extract the badge gradient (e.g., bronze gradient)
-      const badgeGradient = badgeElement.find("linearGradient").attr("id") || "N/A";
+
+
+      // Extract the gradient from the 'fill' attribute in the <path> element
+      const badgePath = badgeElement.find("path");
+      const badgeGradient = badgePath.attr("fill")?.match(/url\(#(.+)\)/)?.[1] || "N/A";
 
       // Extract the number of stars for the badge
       const starCount = badgeElement.find(".badge-star").length || 0;

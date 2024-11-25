@@ -14,105 +14,99 @@ async function loadLocalHackerRankLogo(logoPath) {
 
 // Create a GitHub-style card
 async function createGithubCard(data, logoPath, outputFile) {
-  const cardWidth = 600;
-  const logoHeight = 80;
-  const badgeWidth = 50;
-  const spaceBetweenBadges = 20;
-  const yOffsetStart = logoHeight + 30;
+  const cardWidth = 600; // Fixed attractive size
+  const cardHeight = 300; // Fixed height
+  const cardPadding = 20;
+  const badgeSize = 60; // Smaller badge size
+  const badgeSpacing = 30;
+  const logoHeight = 60;
+  const yOffsetStart = logoHeight + 40;
   let yOffset = yOffsetStart;
 
-  const badgesInRow = Math.floor((cardWidth - 40) / (badgeWidth + spaceBetweenBadges));
-  const badgeRows = Math.ceil(data.badges.length / badgesInRow);
-  const cardHeight = yOffsetStart + badgeRows * (badgeWidth + spaceBetweenBadges + 20) + 180;
+  const badgesPerRow = Math.floor((cardWidth - cardPadding * 2) / (badgeSize + badgeSpacing));
+  const rowsNeeded = Math.ceil(data.badges.length / badgesPerRow);
 
   const canvas = createCanvas(cardWidth, cardHeight);
   const ctx = canvas.getContext("2d");
 
   // Set background color
-  ctx.fillStyle = "white";
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, cardWidth, cardHeight);
 
-  // Load and draw the HackerRank logo
+  // Draw the HackerRank logo
   const logo = await loadLocalHackerRankLogo(logoPath);
   if (logo) {
-    ctx.drawImage(logo, 20, 20, 200, logoHeight);
+    ctx.drawImage(logo, cardPadding, cardPadding, 200, logoHeight);
   }
 
-  // Set default font
-  ctx.font = "bold 32px sans-serif";
-  ctx.fillStyle = "black";
+  // Add user information
+  ctx.font = "bold 22px sans-serif";
+  ctx.fillStyle = "#333";
+  ctx.fillText(`HackerRank User: ${data.username || "N/A"}`, cardPadding, yOffset);
+  yOffset += 35;
 
-  // Add user info
-  ctx.fillText(`HackerRank User: ${data.username}`, 20, yOffset);
+  ctx.font = "18px sans-serif";
+  ctx.fillText(`Name: ${data.full_name || "N/A"}`, cardPadding, yOffset);
   yOffset += 40;
-  ctx.font = "16px sans-serif";
-  ctx.fillText(`Name: ${data.full_name}`, 20, yOffset);
-  yOffset += 60;
 
-  // Add badges section
-  ctx.fillText("Badges:", 20, yOffset);
-  yOffset += 20; 
+  // Center badges horizontally
+  const totalBadgeWidth = badgesPerRow * badgeSize + (badgesPerRow - 1) * badgeSpacing;
+  let xOffset = (cardWidth - totalBadgeWidth) / 2;
 
-  let xOffset = 30;
-
+  // Draw badges
   for (let i = 0; i < data.badges.length; i++) {
     const badge = data.badges[i];
 
-    if (badge.icon_url !== "N/A") {
-      try {
-        // Fetch the badge image
-        const response = await axios.get(badge.icon_url, { responseType: "arraybuffer" });
-        const badgeImage = await loadImage(Buffer.from(response.data));
+    try {
+      // Fetch the badge icon
+      const response = await axios.get(badge.icon_url, { responseType: "arraybuffer" });
+      const badgeIcon = await loadImage(Buffer.from(response.data));
 
-        // Draw the badge image
-        ctx.drawImage(badgeImage, xOffset, yOffset, badgeWidth, badgeWidth);
+      // Draw hexagon shape for the badge
+      const hexCenterX = xOffset + badgeSize / 2;
+      const hexCenterY = yOffset + badgeSize / 2;
+      const hexRadius = badgeSize / 2;
 
-        // Add badge title with wrapping (updated to be responsive)
-        const badgeTitle = badge.title;
-        const badgeTitleMaxWidth = badgeWidth; // Max width for the title under the badge
-        const lineHeight = 18; // Set the line height for wrapped text
-        let currentYOffset = yOffset + badgeWidth + 20; // Starting position for text (below badge image)
+      const gradient = ctx.createLinearGradient(hexCenterX, yOffset, hexCenterX, yOffset + badgeSize);
+      gradient.addColorStop(0, badge.gradient === "badge-gold-gradient" ? "#FFD700" : "#E57373");
+      gradient.addColorStop(1, "#FFFFFF");
 
-        const words = badgeTitle.split(' ');
-        let lines = [];
-        let currentLine = '';
+      ctx.fillStyle = gradient;
+      drawHexagon(ctx, hexCenterX, hexCenterY, hexRadius);
+      ctx.fill();
 
-        // Wrap the text into lines that fit within the badge width
-        for (let i = 0; i < words.length; i++) {
-          const testLine = currentLine + words[i] + ' ';
-          const testWidth = ctx.measureText(testLine).width;
+      // Draw the badge icon
+      const iconSize = badgeSize * 0.5;
+      ctx.drawImage(
+        badgeIcon,
+        xOffset + (badgeSize - iconSize) / 2,
+        yOffset + (badgeSize - iconSize) / 2 - 5,
+        iconSize,
+        iconSize
+      );
 
-          // Check if the text exceeds the width and create a new line
-          if (testWidth > badgeTitleMaxWidth && currentLine.length > 0) {
-            lines.push(currentLine); // Push the current line to lines array
-            currentLine = words[i] + ' '; // Start a new line
-          } else {
-            currentLine = testLine; // Continue adding to current line
-          }
-        }
+      // Draw the badge title
+      ctx.font = "bold 14px sans-serif";
+      ctx.fillStyle = "#333";
+      ctx.textAlign = "center";
+      ctx.fillText(badge.title, hexCenterX, yOffset + badgeSize + 15);
 
-        lines.push(currentLine); // Push the final line
+      // Draw stars
+      const starText = "★".repeat(badge.stars) + "☆".repeat(5 - badge.stars);
+      ctx.font = "14px sans-serif";
+      ctx.fillStyle = "#FFD700";
+      ctx.fillText(starText, hexCenterX, yOffset + badgeSize + 35);
 
-        // Draw each line of the wrapped badge title
-        const donwLine = 5;
-        lines.forEach((lineText, index) => {
-          // Center the text below the badge image
-          ctx.fillText(lineText, xOffset + (badgeWidth - ctx.measureText(lineText).width) / 2, currentYOffset + index * lineHeight);
-          currentYOffset += donwLine; // Move down for the next line
-        });
+      // Update positions
+      xOffset += badgeSize + badgeSpacing;
 
-        // Update position for next badge
-        xOffset += badgeWidth + spaceBetweenBadges;
-
-        // Check if we need to move to the next row of badges
-        if ((i + 1) % badgesInRow === 0) {
-          xOffset = 20;
-          yOffset += badgeWidth + spaceBetweenBadges + (lines.length * lineHeight); // Adjust for wrapped text height
-        }
-
-      } catch (err) {
-        console.error(`Failed to load badge image for ${badge.title}: ${err.message}`);
+      // Wrap to the next row if needed
+      if ((i + 1) % badgesPerRow === 0) {
+        xOffset = (cardWidth - totalBadgeWidth) / 2;
+        yOffset += badgeSize + badgeSpacing + 40;
       }
+    } catch (err) {
+      console.error(`Error loading badge: ${err.message}`);
     }
   }
 
@@ -120,6 +114,16 @@ async function createGithubCard(data, logoPath, outputFile) {
   const buffer = canvas.toBuffer("image/png");
   fs.writeFileSync(outputFile, buffer);
   console.log(`Card saved as ${outputFile}`);
+}
+
+// Helper function to draw a hexagon
+function drawHexagon(ctx, x, y, radius) {
+  ctx.beginPath();
+  for (let i = 0; i <= 6; i++) {
+    const angle = (Math.PI / 3) * i;
+    ctx.lineTo(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
+  }
+  ctx.closePath();
 }
 
 module.exports = { createGithubCard };
