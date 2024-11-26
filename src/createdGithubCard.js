@@ -19,7 +19,7 @@ async function createGithubCard(data, logoPath, outputFile) {
   const cardPadding = 20;
   const badgeSize = 100; // Reduced hexagon size
   const badgeSpacing = 25;
-  const logoHeight = 90;
+  const logoHeight = 100;
   const yOffsetStart = logoHeight + 40;
   let yOffset = yOffsetStart;
   const cornerRadius = 20; // Added corner radius for the card
