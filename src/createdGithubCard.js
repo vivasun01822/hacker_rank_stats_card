@@ -14,17 +14,19 @@ async function loadLocalHackerRankLogo(logoPath) {
 
 // Create a GitHub-style card
 async function createGithubCard(data, logoPath, outputFile) {
-  const cardWidth = 700; // Fixed card size
-  const cardHeight = 400;
+  const cardWidth = 600; // Fixed card size
+  var cardHeight = 350;
+  if (data.badges.length > 7){
+      cardHeight = 400;
+  } 
   const cardPadding = 20;
-  const badgeSize = 100; // Reduced hexagon size
-  const badgeSpacing = 25;
+  const badgeSize = 80; // Reduced hexagon size
   const logoHeight = 100;
   const yOffsetStart = logoHeight + 40;
   let yOffset = yOffsetStart;
   const cornerRadius = 20; // Added corner radius for the card
 
-  const badgesPerRow = Math.floor((cardWidth - cardPadding * 2) / (badgeSize + badgeSpacing));
+  const badgesPerRow = Math.floor((cardWidth - cardPadding * 2) / badgeSize);
   const canvas = createCanvas(cardWidth, cardHeight);
   const ctx = canvas.getContext("2d");
 
@@ -58,8 +60,8 @@ async function createGithubCard(data, logoPath, outputFile) {
   // Center badges horizontally
   ctx.font = "18px sans-serif";
   ctx.fillText(`Badges: `, cardPadding, yOffset);
-  yOffset += 40;
-  const totalBadgeWidth = badgesPerRow * badgeSize + (badgesPerRow - 1) * badgeSpacing;
+  yOffset += 20;
+  const totalBadgeWidth = badgesPerRow * badgeSize + (badgesPerRow - 1);
   let xOffset = (cardWidth - totalBadgeWidth) / 2;
 
   // Draw badges
@@ -85,7 +87,7 @@ async function createGithubCard(data, logoPath, outputFile) {
       ctx.fill();
 
       // Draw the smaller badge icon
-      const iconSize = badgeSize * 0.25; // Reduced icon size (25% of badge size)
+      const iconSize = badgeSize * 0.20; // Reduced icon size (20% of badge size)
       ctx.drawImage(
         badgeIcon,
         xOffset + (badgeSize - iconSize) / 2,
@@ -95,24 +97,24 @@ async function createGithubCard(data, logoPath, outputFile) {
       );
 
       // Insert badge title inside the hexagon
-      ctx.font = "bold 10px sans-serif"; // Smaller font size for title
+      ctx.font = "bold 8px sans-serif"; // Smaller font size for title
       ctx.fillStyle = "#333";
       ctx.textAlign = "center";
-      ctx.fillText(badge.title, hexCenterX, hexCenterY + 18); // Closer to the icon
+      ctx.fillText(badge.title, hexCenterX, hexCenterY + 12); // Closer to the icon
 
       // Insert stars inside the hexagon
       const starText = "★".repeat(badge.stars); // Only show the number of stars earned
-      ctx.font = "10px sans-serif"; // Adjusted font size for stars
+      ctx.font = "6px sans-serif"; // Adjusted font size for stars
       ctx.fillStyle = "#000000"; // Black stars
-      ctx.fillText(starText, hexCenterX, hexCenterY + 30); // Closer to the title
+      ctx.fillText(starText, hexCenterX, hexCenterY + 20); // Closer to the title
 
       // Update positions
-      xOffset += badgeSize + badgeSpacing;
+      xOffset += badgeSize;
 
       // Wrap to the next row if needed
       if ((i + 1) % badgesPerRow === 0) {
         xOffset = (cardWidth - totalBadgeWidth) / 2;
-        yOffset += badgeSize + badgeSpacing + 40;
+        yOffset += badgeSize;
       }
     } catch (err) {
       console.error(`Error loading badge: ${err.message}`);
