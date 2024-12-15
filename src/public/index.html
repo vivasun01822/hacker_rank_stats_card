@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackerRank Stats Card Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ant-design/4.16.13/antd.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #6e7f9d, #8c9bde);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header img {
+            height: 120px;
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            color: #333;
+            font-weight: 400;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+        }
+
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-section label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: block;
+            color: #333;
+        }
+
+        .form-section input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #dcdcdc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-section input:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 10px rgba(24, 144, 255, 0.4);
+        }
+
+        .form-section button {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-section button:hover {
+            background-color: #40a9ff;
+        }
+
+        .output-section {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .footer a {
+            color: #1890ff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #40a9ff;
+        }
+
+        .footer p {
+            margin-top: 10px;
+        }
+
+        .footer span {
+            font-weight: bold;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .form-section input,
+            .form-section button {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .footer p {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header img {
+                max-width: 60px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-section input,
+            .form-section button {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .footer p {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="https://i.postimg.cc/4y1Dpxv4/hackerrank.jpg" alt="HackerRank Logo">
+            <h1> Stats Card Generator</h1>
+        </div>
+
+        <form action="/generate-card" method="POST" class="form-section">
+            <label for="username">Enter your HackerRank Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter Username" required>
+            <button type="submit">Generate Card</button>
+        </form>
+
+        <div class="output-section">
+            <!-- The generated card will be displayed here -->
+        </div>
+
+        <div class="footer">
+            <p>Made with 💚 by <a href="https://github.com/sun01822" target="_blank">MD. Shariar Hossain Sun</a></p>
+            <p><span>Open Source</span> & <span>Free to Use</span></p>
+        </div>
+    </div>
+
+</body>
+
+</html>
