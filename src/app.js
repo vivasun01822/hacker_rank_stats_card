@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 // Route: Generate Card
-app.post("/generate-card", upload.none(), async (req, res) => {
+app.get("/generate-card", async (req, res) => {
     const { username } = req.query;
 
     if (!username) {
