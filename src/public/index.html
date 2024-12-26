@@ -191,11 +191,30 @@
             <h1> Stats Card Generator</h1>
         </div>
 
-        <form action="/generate-card" method="POST" class="form-section">
+        <form id="generateCardForm" method="POST" class="form-section">
             <label for="username">Enter your HackerRank Username:</label>
             <input type="text" id="username" name="username" placeholder="Enter Username" required>
             <button type="submit">Generate Card</button>
         </form>
+        
+        <script>
+            const form = document.getElementById('generateCardForm');
+        
+            form.addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+        
+                const username = document.getElementById('username').value;
+        
+                if (!username) {
+                    alert("Please enter a username");
+                    return;
+                }
+        
+                // Update the form's action dynamically
+                this.action = `/generate-card?username=${encodeURIComponent(username)}`;
+                this.submit(); // Submit the form
+            });
+        </script>        
 
         <div class="output-section">
             <!-- The generated card will be displayed here -->

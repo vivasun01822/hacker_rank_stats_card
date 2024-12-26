@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 
 // Route: Generate Card
 app.post("/generate-card", upload.none(), async (req, res) => {
-    const { username } = req.body;
+    const { username } = req.query;
 
     if (!username) {
         return res.status(400).json({ success: false, message: "Username is required" });
