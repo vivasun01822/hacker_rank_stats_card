@@ -169,7 +169,7 @@ function generateGithubCardSVG(data, logoPath) {
 
   // Shadow effect for badges
   const svgFooter = `
-      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <filter id="shhttps://hacker-rank-stats-card.vercel.app/generate-card?username=samba9274adow" x="-50%" y="-50%" width="200%" height="200%">
         <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#333" />
       </filter>
       </svg>
