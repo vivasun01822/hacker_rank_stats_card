@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { fetchHackerrankData } = require("./fetchData"); // Your existing function
+const { fetchHackerrankData } = require("../fetchData"); // Your existing function
 
 const app = express();
 const upload = multer(); // For processing form data

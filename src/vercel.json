@@ -5,12 +5,6 @@
         "src": "src/app.js",
         "use": "@vercel/node"
       }
-    ],
-    "routes": [
-      {
-        "src": "/generate-card",
-        "dest": "/app.js"
-      }
     ]
   }
   
