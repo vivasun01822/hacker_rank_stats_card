@@ -2,9 +2,9 @@
   "name": "hacker_rank_stats_card",
   "version": "1.0.0",
   "description": "A Node.js app to generate HackerRank stats cards.",
-  "main": "src/app.js",
+  "main": "api/app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node api/app.js",
     "build": "vercel build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

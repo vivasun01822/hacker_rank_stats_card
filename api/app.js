@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { fetchHackerrankData } = require("../fetchData"); // Your existing function
+const { fetchHackerrankData } = require("../api/fetchData"); // Your existing function
 
 const app = express();
 const upload = multer(); // For processing form data
@@ -19,7 +19,7 @@ app.use("/output", express.static(path.join(__dirname, "output"))); // Serves ge
 
 // Route: Home Page
 app.get("/", (req, res) => {
-  const indexFilePath = path.join(__dirname, "public", "index.html");
+  const indexFilePath = path.join(__dirname, "..", "public", "index.html");
 
   // Ensure the file exists before sending
   if (fs.existsSync(indexFilePath)) {
@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
     res.status(404).send("Home page not found");
   }
 });
+
 
 // Route: Generate Card
 app.get("/generate-card", async (req, res) => {
@@ -38,7 +39,7 @@ app.get("/generate-card", async (req, res) => {
   }
 
   const logoPath = path.join(__dirname, "assets", "hackerrank.jpg");
-  const outputFile = path.join(__dirname, "output", `${username}_hackerrank_card.png`);
+  //const outputFile = path.join(__dirname, "output", `${username}_hackerrank_card.png`);
 
   try {
     // Fetch user data and generate the card
@@ -48,9 +49,7 @@ app.get("/generate-card", async (req, res) => {
     // Generate SVG content
     const svgContent = generateGithubCardSVG(userData, logoPath);
 
-    // Return the SVG as response
-    res.setHeader("Content-Type", "image/svg+xml");
-    res.send(svgContent);
+    // Return the SVG as responsesrc
 
   } catch (err) {
     console.error(`Error: ${err.message}`);
@@ -64,7 +63,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const PORT = 3004;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
