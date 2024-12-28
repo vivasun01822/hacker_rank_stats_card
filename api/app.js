@@ -33,8 +33,8 @@ app.get("/", (req, res) => {
 
 // Route: Generate Card
 app.get("/generate-card", async (req, res) => {
-  
-  logger.userInfo(`url: ${req.url}`);
+
+  console.log("url", req.url);
 
   const { username } = req.query;
 
@@ -42,7 +42,7 @@ app.get("/generate-card", async (req, res) => {
     return res.status(400).json({ success: false, message: "Username is required" });
   }
 
-  logger.userInfo(`Generating card for HackerRank user: ${username}`);
+  console.log("Generating card for ", username);
 
   const logoPath = path.join("assets", "hackerrank.jpg");
 
