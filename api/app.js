@@ -38,18 +38,18 @@ app.get("/generate-card", async (req, res) => {
     return res.status(400).json({ success: false, message: "Username is required" });
   }
 
-  const logoPath = path.join(__dirname, "assets", "hackerrank.jpg");
-  //const outputFile = path.join(__dirname, "output", `${username}_hackerrank_card.png`);
+  const logoPath = path.join("assets", "hackerrank.jpg");
 
   try {
     // Fetch user data and generate the card
     const userData = await fetchHackerrankData(username);
-    // await createGithubCard(userData, logoPath, outputFile);
 
     // Generate SVG content
     const svgContent = generateGithubCardSVG(userData, logoPath);
 
     // Return the SVG as responsesrc
+    res.setHeader("Content-Type", "image/svg+xml");
+    res.send(svgContent);
 
   } catch (err) {
     console.error(`Error: ${err.message}`);
@@ -63,7 +63,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const PORT = 3000;
+const PORT = 3004;
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
