@@ -1,7 +1,0 @@
-{
-    "build": {
-        "env": {
-            "PKG_CONFIG_PATH": "/usr/local/lib/pkgconfig:/usr/lib/pkgconfig"
-        }
-    }
-}
