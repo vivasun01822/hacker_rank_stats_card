@@ -44,7 +44,7 @@ app.get("/generate-card", async (req, res) => {
 
   console.log("Generating card for ", username);
 
-  const logoPath = path.join("assets", "hackerrank.jpg");
+  const logoPath = path.join(__dirname, "assets", "hackerrank.jpg");
 
   try {
     // Fetch user data and generate the card
