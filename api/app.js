@@ -33,6 +33,9 @@ app.get("/", (req, res) => {
 
 // Route: Generate Card
 app.get("/generate-card", async (req, res) => {
+  
+  logger.userInfo(`url: ${req.url}`);
+
   const { username } = req.query;
 
   if (!username) {
