@@ -3,6 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { fetchHackerrankData } = require("../api/fetchData"); // Your existing function
+const { log } = require("console");
 
 const app = express();
 const upload = multer(); // For processing form data
@@ -38,6 +39,8 @@ app.get("/generate-card", async (req, res) => {
     return res.status(400).json({ success: false, message: "Username is required" });
   }
 
+  logger.userInfo(`Generating card for HackerRank user: ${username}`);
+
   const logoPath = path.join("assets", "hackerrank.jpg");
 
   try {
@@ -63,7 +66,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const PORT = 3004;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
