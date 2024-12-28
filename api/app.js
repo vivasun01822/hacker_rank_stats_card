@@ -17,7 +17,7 @@ app.use(express.json());
 // Serve static files
 app.use(express.static(path.join(__dirname, "public"))); // Serves static files like CSS, JS, and index.html
 app.use("/output", express.static(path.join(__dirname, "output"))); // Serves generated images
-app.use("/assets", express.static(path.join(__dirname, "..", "assets"))); // Serves assets like images
+// app.use("/assets", express.static(path.join(__dirname, "..", "assets"))); // Serves assets like images
 
 // Route: Home Page
 app.get("/", (req, res) => {
@@ -45,7 +45,7 @@ app.get("/generate-card", async (req, res) => {
 
   console.log("Generating card for ", username);
 
-  const logoPath = path.join(__dirname, "assets", "hackerrank.jpg");
+  const logoPath = "https://i.postimg.cc/4y1Dpxv4/hackerrank.jpg"
 
   try {
     // Fetch user data and generate the card
@@ -99,9 +99,8 @@ function generateGithubCardSVG(data, logoPath) {
 
   // Draw the HackerRank logo
   let logoSVG = "";
-  if (fs.existsSync(logoPath)) {
-    const logoData = fs.readFileSync(logoPath, { encoding: 'base64' });
-    logoSVG = `<image href="data:image/png;base64,${logoData}" x="20" width="200" height="${logoHeight}" />`;
+  if (logoPath) {
+    logoSVG = `<image href="${logoPath}" x="20" width="200" height="${logoHeight}" />`;
   }
 
   // Add user information with a refined font style
