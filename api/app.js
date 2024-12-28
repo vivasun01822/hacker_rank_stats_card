@@ -17,7 +17,6 @@ app.use(express.json());
 // Serve static files
 app.use(express.static(path.join(__dirname, "public"))); // Serves static files like CSS, JS, and index.html
 app.use("/output", express.static(path.join(__dirname, "output"))); // Serves generated images
-// app.use("/assets", express.static(path.join(__dirname, "..", "assets"))); // Serves assets like images
 
 // Route: Home Page
 app.get("/", (req, res) => {
