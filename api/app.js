@@ -55,6 +55,7 @@ app.get("/generate-card", async (req, res) => {
 
     // Return the SVG as responsesrc
     res.setHeader("Content-Type", "image/svg+xml");
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.send(svgContent);
 
   } catch (err) {
