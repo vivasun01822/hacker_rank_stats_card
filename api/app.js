@@ -3,7 +3,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { fetchHackerrankData } = require("../api/fetchData"); // Your existing function
-const { log } = require("console");
 const cors = require("cors");
 
 const app = express();
@@ -11,13 +10,11 @@ const upload = multer(); // For processing form data
 
 // Middleware to parse form data (urlencoded data)
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // Middleware to parse JSON data
 app.use(express.json());
 
-// Serve static files
-app.use(express.static(path.join(__dirname, "public"))); // Serves static files like CSS, JS, and index.html
-app.use("/output", express.static(path.join(__dirname, "output"))); // Serves generated images
 
 // Route: Home Page
 app.get("/", (req, res) => {
