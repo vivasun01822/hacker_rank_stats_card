@@ -1,12 +1,10 @@
 const express = require("express");
-const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { fetchHackerrankData } = require("../api/fetchData"); // Your existing function
 const cors = require("cors");
 
 const app = express();
-const upload = multer(); // For processing form data
 
 // Middleware to parse form data (urlencoded data)
 app.use(express.urlencoded({ extended: true }));
