@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const { fetchHackerrankData } = require("../api/fetchData"); // Your existing function
 const { log } = require("console");
+const cors = require("cors");
 
 const app = express();
 const upload = multer(); // For processing form data
@@ -32,7 +33,7 @@ app.get("/", (req, res) => {
 
 
 // Route: Generate Card
-app.get("/generate-card", async (req, res) => {
+app.get("/generate-card", cors(), async (req, res) => {
 
   console.log("url", req.url);
 
