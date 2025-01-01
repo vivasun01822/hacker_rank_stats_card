@@ -196,25 +196,111 @@
             <input type="text" id="username" name="username" placeholder="Enter Username" required>
             <button type="submit">Generate Card</button>
         </form>
-        
+
         <script>
             const form = document.getElementById('generateCardForm');
-        
+
             form.addEventListener('submit', function (event) {
                 event.preventDefault(); // Prevent default form submission
-        
+
                 const username = document.getElementById('username').value;
-        
+
                 if (!username) {
                     alert("Please enter a username");
                     return;
                 }
-        
+
+                // Show the spinner
+                const spinnerContainer = document.createElement('div');
+                spinnerContainer.classList.add('spinner-container');
+                spinnerContainer.innerHTML = `
+            <div class="spinner">
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+            </div>
+            <p>Generating your stats card...</p>
+        `;
+                document.body.appendChild(spinnerContainer);
+
                 // Update the form's action dynamically
                 this.action = `/generate-card?username=${encodeURIComponent(username)}`;
-                this.submit(); // Submit the form
+                this.submit();
+                
+                // Remove the spinner after 5 seconds
+                setTimeout(() => {
+                    spinnerContainer.remove();
+                    this.reset();
+                }, 5000);
             });
+
+            // Add spinner styles
+            const style = document.createElement('style');
+            style.innerHTML = `
+        .spinner-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: #fff;
+        }
+
+        .spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .spinner .circle {
+            width: 15px;
+            height: 15px;
+            margin: 0 5px;
+            background: #3498db;
+            border-radius: 50%;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+
+        .spinner .circle:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .spinner .circle:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .spinner .circle:nth-child(4) {
+            animation-delay: 0.9s;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .spinner-container p {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+    `;
+            document.head.appendChild(style);
         </script>
+
 
         <div class="output-section">
             <!-- The generated card will be displayed here -->
