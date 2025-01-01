@@ -40,7 +40,7 @@ app.get("/generate-card", cors(), async (req, res) => {
 
   console.log("Generating card for ", username);
 
-  const logoPath = "https://i.postimg.cc/4y1Dpxv4/hackerrank.jpg"
+  const logoPath = path.join(__dirname, "..", "public", "hackerrank.jpeg");
 
   try {
     // Fetch user data and generate the card
@@ -96,7 +96,8 @@ function generateGithubCardSVG(data, logoPath) {
   // Draw the HackerRank logo
   let logoSVG = "";
   if (logoPath) {
-    logoSVG = `<image href="${logoPath}" x="20" width="200" height="${logoHeight}" />`;
+    const logoData = fs.readFileSync(logoPath).toString('base64');
+    logoSVG = `<image href="data:image/jpeg;base64,${logoData}" x="20" width="200" height="${logoHeight}" />`;
   }
 
   // Add user information with a refined font style
