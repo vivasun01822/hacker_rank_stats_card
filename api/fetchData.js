@@ -39,7 +39,7 @@ async function fetchHackerrankData(username) {
 
       // get the image and store the badge with name like "10_days_of_javascript"
       const badgeIconName = badgeIconUrl.split("/").pop().split(".")[0];
-      const publicDir = path.join(__dirname, '../../hacker_rank_stats_card/public');
+      const publicDir = path.join(__dirname, '/hacker_rank_stats_card/public');
       const imagePath = path.join(publicDir, `${badgeIconName}.svg`);
 
       // Ensure the public directory exists
