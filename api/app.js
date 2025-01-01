@@ -15,7 +15,7 @@ app.use(express.json());
 
 
 // Route: Home Page
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   const indexFilePath = path.join(__dirname, "..", "public", "index.html");
 
   // Ensure the file exists before sending
@@ -61,7 +61,7 @@ app.get("/generate-card", cors(), async (req, res) => {
 });
 
 // Catch-All: Handle Undefined Routes
-app.use((req, res) => {
+app.use((_, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
 
@@ -109,12 +109,20 @@ function generateGithubCardSVG(data, logoPath) {
 
   // Center badges horizontally
   const badgesPerRow = 5; // Set badges per row to 5
-  const totalBadgeWidth = badgesPerRow * badgeSize + (badgesPerRow - 1) * badgeGap;
   let xOffset = 20;
 
   // Draw badges with updated design
   for (let i = 0; i < data.badges.length; i++) {
     const badge = data.badges[i];
+    let badgeIcon = "";
+    try {
+      const badgeData = fs.readFileSync(badge.imagePath);
+      badgeIcon = `data:image/svg+xml;base64,${badgeData.toString('base64')}`;
+    } catch (err) {
+      console.error(`Error reading badge image: ${err.message}`);
+      badgeIcon = ""; // Set a default or empty string if image read fails
+    }
+
 
     // Generate perfect hexagon with gradient fill and shadows
     const hexCenterX = xOffset + badgeSize / 2;
@@ -147,8 +155,8 @@ function generateGithubCardSVG(data, logoPath) {
           " fill="${gradient}" stroke="#333" stroke-width="2" filter="url(#shadow)"/>
 
           <!-- Badge Icon -->
-          <image href="${badge.icon_url}" x="${xOffset + (badgeSize - badgeSize * 0.30) / 2}" y="${yOffset + (badgeSize - badgeSize * 0.30) / 2 - 5}" width="${badgeSize * 0.30}" height="${badgeSize * 0.30}" />
-          
+         <image href="${badgeIcon}" x="${xOffset + (badgeSize - badgeSize * 0.30) / 2}" y="${yOffset + (badgeSize - badgeSize * 0.30) / 2 - 5}" width="${badgeSize * 0.30}" height="${badgeSize * 0.30}" />
+         
           <!-- Badge Title -->
           <text x="${hexCenterX}" y="${hexCenterY + 15}" font-family="Arial, sans-serif" font-size="9" font-weight="bold" text-anchor="middle" fill="#333">${badge.title}</text>
           

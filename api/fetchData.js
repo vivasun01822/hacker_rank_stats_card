@@ -1,5 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const fs = require('fs');
+const path = require('path');
 
 // Fetch user profile data from HackerRank
 async function fetchHackerrankData(username) {
@@ -23,7 +25,9 @@ async function fetchHackerrankData(username) {
 
     // Extract badges
     const badges = [];
-    $(".hacker-badge").each((_, element) => {
+    // const badgeIconMap = new Map();
+    const badgeElements = $(".hacker-badge").toArray();
+    for (const element of badgeElements) {
       const badgeElement = $(element);
 
       // Badge title
@@ -33,6 +37,23 @@ async function fetchHackerrankData(username) {
       const badgeIcon = badgeElement.find(".badge-icon");
       const badgeIconUrl = badgeIcon.attr("href") || "N/A";
 
+      // get the image and store the badge with name like "10_days_of_javascript"
+      const badgeIconName = badgeIconUrl.split("/").pop().split(".")[0];
+      const publicDir = path.join(__dirname, '../../hacker_rank_stats_card/public');
+      const imagePath = path.join(publicDir, `${badgeIconName}.svg`);
+
+      // Ensure the public directory exists
+      if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
+      }
+
+      try {
+        // Download and save the image
+        const imageResponse = await axios.get(badgeIconUrl, { responseType: 'arraybuffer' });
+        fs.writeFileSync(imagePath, imageResponse.data);
+      } catch (error) {
+        console.error(`Error downloading image for badge ${badgeTitle}: ${error.message}`);
+      }
 
       // Extract the gradient from the 'fill' attribute in the <path> element
       const badgePath = badgeElement.find("path");
@@ -46,9 +67,11 @@ async function fetchHackerrankData(username) {
         title: badgeTitle,
         icon_url: badgeIconUrl,
         gradient: badgeGradient,
-        stars: starCount
+        stars: starCount,
+        imagePath: imagePath,
       });
-    });
+
+    }
 
     // Sort badges by stars in descending order
     badges.sort((a, b) => b.stars - a.stars);
@@ -57,11 +80,10 @@ async function fetchHackerrankData(username) {
     return {
       username,
       full_name: profileName,
-      badges
+      badges,
     };
   } catch (error) {
-    console.error(`Error fetching data for ${username}: ${error.message}`);
-    throw error;
+    throw new Error(`Failed to fetch HackerRank data: ${error.message}`);
   }
 }
 
