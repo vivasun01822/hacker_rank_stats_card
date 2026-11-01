@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { fetchHackerrankData } = require("../api/fetchData");
 const { generateCardSVG } = require("../api/card");
+const { resolveTheme } = require("../api/themes");
 const cors = require("cors");
 
 const app = express();
@@ -37,12 +38,13 @@ app.get("/generate-card", cors(), async (req, res) => {
   }
 
   try {
+    const theme = resolveTheme(req.query); // cheap, so bad themes fail before HackerRank is called
     const userData = await fetchHackerrankData(username);
 
     res.setHeader("Content-Type", "image/svg+xml");
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Cache-Control", "public, max-age=14400");
-    res.send(generateCardSVG(userData));
+    res.send(generateCardSVG(userData, theme));
   } catch (err) {
     if (err.status) {
       return res.status(err.status).json({ success: false, message: err.message });
