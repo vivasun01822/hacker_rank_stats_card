@@ -56,6 +56,8 @@ jobs:
           check "home page" 200 "http://localhost:3000/" "Show your"
           check "missing username" 400 "http://localhost:3000/generate-card" "Enter a HackerRank username"
           check "invalid username" 400 "http://localhost:3000/generate-card?username=a%3Cb" "letters, numbers"
+          check "unknown theme" 400 "http://localhost:3000/generate-card?username=a&theme=nope" "Theme must be"
+          check "bad custom colour" 400 "http://localhost:3000/generate-card?username=a&theme=custom&bg=zz" "bg must be a hex colour"
           check "unknown route" 404 "http://localhost:3000/nope" "Route not found"
 
       - name: Stop the app

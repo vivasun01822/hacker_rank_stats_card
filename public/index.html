@@ -6,22 +6,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>HackerRank Stats Card</title>
   <meta name="description" content="Turn your HackerRank badges into a card you can paste into your GitHub profile README.">
-  <meta name="theme-color" content="#DDEBE1">
+  <meta name="theme-color" content="#DDEBE1" id="theme-color">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230F3D2E' d='M12 0l10.4 6v12L12 24 1.6 18V6z'/%3E%3Cpath stroke='%23E9BE5A' stroke-width='3' d='M8 6.5v11M16 6.5v11M8 12h8'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --pine: #0F3D2E;
-      --celadon: #DDEBE1;
-      --celadon-deep: #CFE2D6;
-      --porcelain: #F6FAF6;
-      --moss: #47645A;
-      --brass: #E9BE5A;
-      --garnet: #A8322A;
+      --bg: #DDEBE1;
+      --stage: #CFE2D6;
+      --surface: #F6FAF6;
+      --ink: #0F3D2E;
+      --on-ink: #F6FAF6;
+      --ink-hover: #17533F;
+      --muted: #47645A;
+      --error: #A8322A;
+      --shadow: rgb(15 61 46 / .28);
       --gutter: 16px;
       --lattice: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96'%3E%3Cpath fill='none' stroke='%230F3D2E' stroke-opacity='.09' d='M28 0l28 16v32L28 64 0 48V16zM28 64v32M0 48v0M56 48v0'/%3E%3C/svg%3E");
+      /* the card shown in the preview, set from the selected theme by the script */
+      --card-bg: #0F3D2E;
+      --card-border: #2C6B53;
+      --card-text: #F6FAF6;
+    }
+
+    [data-chrome="dark"] {
+      --bg: #0E1512;
+      --stage: #131D19;
+      --surface: #1A2622;
+      --ink: #E6F0EA;
+      --on-ink: #0E1512;
+      --ink-hover: #FFFFFF;
+      --muted: #9BB5A8;
+      --error: #FF8A80;
+      --shadow: rgb(0 0 0 / .55);
+      --lattice: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96'%3E%3Cpath fill='none' stroke='%23E6F0EA' stroke-opacity='.06' d='M28 0l28 16v32L28 64 0 48V16zM28 64v32M0 48v0M56 48v0'/%3E%3C/svg%3E");
+    }
+
+    [data-chrome="light"] {
+      --bg: #F6F8FA;
+      --stage: #EAEEF2;
+      --surface: #FFFFFF;
+      --ink: #1F2328;
+      --on-ink: #FFFFFF;
+      --ink-hover: #32383F;
+      --muted: #59636E;
+      --error: #B42318;
+      --shadow: rgb(31 35 40 / .22);
+      --lattice: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96'%3E%3Cpath fill='none' stroke='%231F2328' stroke-opacity='.06' d='M28 0l28 16v32L28 64 0 48V16zM28 64v32M0 48v0M56 48v0'/%3E%3C/svg%3E");
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -30,14 +62,14 @@
       margin: 0;
       min-height: 100vh;
       min-height: 100dvh;
-      background: var(--celadon);
-      color: var(--pine);
+      background: var(--bg);
+      color: var(--ink);
       font: 400 1.0625rem/1.5 'Atkinson Hyperlegible', system-ui, sans-serif;
     }
 
     a { color: inherit; text-underline-offset: 2px; }
 
-    :focus-visible { outline: 3px solid var(--pine); outline-offset: 2px; }
+    :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 
     [hidden] { display: none !important; }
 
@@ -76,15 +108,16 @@
     .lede {
       max-width: 34ch;
       margin: 16px 0 28px;
-      color: var(--moss);
+      color: var(--muted);
       font-size: 1.125rem;
     }
 
     form { max-width: 28rem; }
 
-    label {
+    .label, legend {
       display: block;
-      margin-bottom: 6px;
+      margin: 0 0 6px;
+      padding: 0;
       font-weight: 700;
     }
 
@@ -93,18 +126,18 @@
       align-items: center;
       min-height: 52px;
       padding-left: 14px;
-      background: var(--porcelain);
-      border: 2px solid var(--pine);
+      background: var(--surface);
+      border: 2px solid var(--ink);
       border-radius: 10px;
     }
 
-    .field:focus-within { outline: 3px solid var(--pine); outline-offset: 2px; }
+    .field:focus-within { outline: 3px solid var(--ink); outline-offset: 2px; }
 
-    .field[data-invalid] { border-color: var(--garnet); }
+    .field[data-invalid] { border-color: var(--error); }
 
-    .field span { flex: none; color: var(--moss); }
+    .field span { flex: none; color: var(--muted); }
 
-    input {
+    #username {
       flex: 1;
       min-width: 0;
       height: 48px;
@@ -112,13 +145,13 @@
       border: 0;
       border-radius: 8px;
       background: transparent;
-      color: var(--pine);
+      color: var(--ink);
       font: inherit;
       font-size: max(16px, 1em); /* below 16px iOS zooms on focus */
       font-weight: 700;
     }
 
-    input:focus-visible { outline: none; } /* .field draws the ring */
+    #username:focus-visible { outline: none; } /* .field draws the ring */
 
     .primary {
       display: block;
@@ -127,29 +160,98 @@
       margin-top: 12px;
       border: 0;
       border-radius: 10px;
-      background: var(--pine);
-      color: var(--porcelain);
+      background: var(--ink);
+      color: var(--on-ink);
       font: inherit;
       font-weight: 700;
       cursor: pointer;
     }
 
-    .primary:hover { background: #17533F; }
+    .primary:hover { background: var(--ink-hover); }
 
     .primary[aria-busy="true"] { opacity: .75; cursor: progress; }
 
     .status {
       min-height: 1.5em;
       margin: 12px 0 0;
-      color: var(--moss);
+      color: var(--muted);
     }
 
-    .status.error { color: var(--garnet); font-weight: 700; }
+    .status.error { color: var(--error); font-weight: 700; }
+
+    fieldset { min-width: 0; margin: 20px 0 0; padding: 0; border: 0; }
+
+    .segments {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      overflow: hidden;
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+    }
+
+    .segment { position: relative; }
+
+    .segment input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .segment span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      font-weight: 700;
+    }
+
+    .segment + .segment span { border-left: 2px solid var(--ink); }
+
+    .segment input:checked + span { background: var(--ink); color: var(--on-ink); }
+
+    .segment input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: -7px; }
+
+    .segment input:checked:focus-visible + span { outline-color: var(--on-ink); }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .swatch { display: block; font-weight: 700; }
+
+    .swatch input {
+      display: block;
+      width: 100%;
+      height: 48px;
+      margin: 4px 0;
+      padding: 2px;
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .swatch code {
+      color: var(--muted);
+      font: .875rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .hint { margin: 10px 0 0; color: var(--muted); font-size: .9375rem; }
+
+    .hint.warn { color: var(--error); font-weight: 700; }
 
     footer {
       min-width: 0;
       padding: 24px var(--gutter);
-      color: var(--moss);
+      color: var(--muted);
       font-size: .9375rem;
     }
 
@@ -161,7 +263,7 @@
       gap: 28px;
       min-width: 0;
       padding: 28px var(--gutter) 36px;
-      background: var(--celadon-deep) var(--lattice);
+      background: var(--stage) var(--lattice);
     }
 
     .showcase, .embed {
@@ -176,7 +278,7 @@
       display: block;
       width: 100%;
       height: auto;
-      filter: drop-shadow(0 14px 22px rgb(15 61 46 / .28));
+      filter: drop-shadow(0 14px 22px var(--shadow));
     }
 
     .card { animation: settle .45s cubic-bezier(.2, .8, .25, 1); }
@@ -187,11 +289,11 @@
 
     .placeholder p {
       margin: 12px 0 0;
-      color: var(--moss);
+      color: var(--muted);
       text-align: center;
     }
 
-    .placeholder .bar { fill: var(--porcelain); opacity: .16; }
+    .placeholder .bar { fill: var(--card-text); opacity: .16; }
 
     .placeholder .hex { opacity: .85; }
 
@@ -226,7 +328,7 @@
       margin: 0;
       padding: 12px 14px;
       border-radius: 10px;
-      background: var(--porcelain);
+      background: var(--surface);
       font: .875rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
@@ -238,10 +340,10 @@
       justify-content: center;
       min-height: 44px;
       padding: 0 14px;
-      border: 2px solid var(--pine);
+      border: 2px solid var(--ink);
       border-radius: 10px;
       background: transparent;
-      color: var(--pine);
+      color: var(--ink);
       font: inherit;
       font-size: 1rem;
       font-weight: 700;
@@ -249,7 +351,7 @@
       cursor: pointer;
     }
 
-    .secondary:hover { background: var(--pine); color: var(--porcelain); }
+    .secondary:hover { background: var(--ink); color: var(--on-ink); }
 
     @media (min-width: 900px) {
       .page {
@@ -259,18 +361,34 @@
 
       .stage { grid-area: 1 / 2 / 3 / 3; }
 
-      .intro { padding: 32px clamp(32px, 4vw, 64px) 32px; }
+      .intro { padding: 24px clamp(32px, 4vw, 64px) 16px; }
 
-      .brand { margin-bottom: clamp(24px, 6vh, 96px); }
+      .brand { margin-bottom: clamp(16px, 4vh, 96px); }
 
-      h1 { font-size: clamp(4.5rem, 6vw, 7rem); }
+      h1 { font-size: clamp(3.25rem, min(6vw, 8.5vh), 7rem); }
 
-      footer { padding: 0 clamp(32px, 4vw, 64px) 32px; }
+      footer { padding: 0 clamp(32px, 4vw, 64px) 24px; }
+
+      .lede { margin: 12px 0 18px; }
+
+      fieldset { margin-top: 14px; }
 
       .stage {
         justify-content: center;
         padding: 48px clamp(24px, 4vw, 64px);
       }
+    }
+
+    @media (min-width: 900px) and (max-height: 860px) {
+      .lede { margin: 10px 0 14px; font-size: 1rem; }
+
+      .segment span { min-height: 44px; }
+
+      .primary { min-height: 48px; margin-top: 10px; }
+
+      .status { margin-top: 8px; }
+
+      h1 { font-size: clamp(3.25rem, min(6vw, 8vh), 7rem); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -285,7 +403,7 @@
     <div class="intro">
       <p class="brand">
         <svg viewBox="0 0 22 26" aria-hidden="true">
-          <path fill="#0F3D2E" d="M11 0l11 6.5v13L11 26 0 19.5v-13z" />
+          <path fill="currentColor" d="M11 0l11 6.5v13L11 26 0 19.5v-13z" />
           <path stroke="#E9BE5A" stroke-width="3" d="M7 7.5v11M15 7.5v11M7 13h8" />
         </svg>
         HackerRank Stats Card
@@ -295,12 +413,32 @@
       <p class="lede">Enter your username to get a card you can paste into your profile README.</p>
 
       <form id="form" novalidate>
-        <label for="username">HackerRank username</label>
+        <label class="label" for="username">HackerRank username</label>
         <div class="field" id="field">
           <span aria-hidden="true">hackerrank.com/</span>
           <input id="username" name="username" type="text" autocomplete="off" autocapitalize="none"
             autocorrect="off" spellcheck="false" enterkeyhint="go" aria-describedby="status">
         </div>
+
+        <fieldset>
+          <legend>Card theme</legend>
+          <div class="segments">
+            <label class="segment"><input type="radio" name="theme" id="theme-classic" value="classic" checked><span>Classic</span></label>
+            <label class="segment"><input type="radio" name="theme" id="theme-dark" value="dark"><span>Dark</span></label>
+            <label class="segment"><input type="radio" name="theme" id="theme-light" value="light"><span>Light</span></label>
+            <label class="segment"><input type="radio" name="theme" id="theme-custom" value="custom"><span>Custom</span></label>
+          </div>
+          <div id="custom" hidden>
+            <div class="swatches">
+              <label class="swatch"><span>Background</span><input type="color" data-key="bg"><code></code></label>
+              <label class="swatch"><span>Text</span><input type="color" data-key="text"><code></code></label>
+              <label class="swatch"><span>Accent</span><input type="color" data-key="accent"><code></code></label>
+              <label class="swatch"><span>Border</span><input type="color" data-key="border"><code></code></label>
+            </div>
+            <p class="hint" id="contrast-note" role="status" aria-live="polite"></p>
+          </div>
+        </fieldset>
+
         <button class="primary" id="submit" type="submit">Generate card</button>
         <p class="status" id="status" role="status" aria-live="polite"></p>
       </form>
@@ -312,7 +450,7 @@
         <div class="placeholder" id="placeholder">
           <svg class="ghost" viewBox="0 0 600 286" aria-hidden="true">
             <defs><polygon id="ghost-hex" points="0,-40 34.64,-20 34.64,20 0,40 -34.64,20 -34.64,-20" /></defs>
-            <rect x="1" y="1" width="598" height="284" rx="18" fill="#0F3D2E" stroke="#2C6B53" stroke-width="2" />
+            <rect x="1" y="1" width="598" height="284" rx="18" style="fill: var(--card-bg); stroke: var(--card-border)" stroke-width="2" />
             <rect class="bar" x="28" y="30" width="110" height="14" rx="7" />
             <rect class="bar" x="462" y="30" width="110" height="14" rx="7" />
             <rect class="bar" x="28" y="64" width="250" height="26" rx="13" />
@@ -359,6 +497,7 @@
     </footer>
   </div>
 
+  <script type="application/json" id="themes">{"classic":{"bg":"#0F3D2E","border":"#2C6B53","text":"#F6FAF6","accent":"#E9BE5A"},"dark":{"bg":"#0D1117","border":"#30363D","text":"#F0F6FC","accent":"#E3B341"},"light":{"bg":"#FFFFFF","border":"#D0D7DE","text":"#1F2328","accent":"#8A5A00"}}</script>
   <script>
     const $ = (id) => document.getElementById(id);
     const form = $('form');
@@ -371,10 +510,114 @@
     const card = $('card');
     const embed = $('embed');
     const download = $('download');
+    const custom = $('custom');
+    const contrastNote = $('contrast-note');
+    const swatches = [...custom.querySelectorAll('input[type=color]')];
 
+    // Same colours as api/themes.js (a unit test keeps the two in step).
+    const THEMES = JSON.parse($('themes').textContent);
+    const KEYS = ['bg', 'text', 'accent', 'border'];
+
+    const state = { theme: 'classic', colors: {} };
+    let customTouched = false;
     let loading = false;
+    let rerun = false;
+    let currentUsername = '';
+    let shownUsername = '';
     let blobUrl = '';
+    let debounce;
 
+    // ---- colour helpers
+    function toHex6(value) {
+      const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(value || '');
+      if (!m) return null;
+      const h = m[1].length === 3 ? [...m[1]].map((c) => c + c).join('') : m[1];
+      return `#${h.toLowerCase()}`;
+    }
+
+    function luminance(hex) {
+      const [r, g, b] = [1, 3, 5].map((i) => {
+        const v = parseInt(hex.slice(i, i + 2), 16) / 255;
+        return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    function contrast(a, b) {
+      const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+      return (hi + 0.05) / (lo + 0.05);
+    }
+
+    function seedColors(theme) {
+      for (const key of KEYS) state.colors[key] = toHex6(THEMES[theme][key]);
+    }
+    seedColors('dark');
+
+    // ---- theme: card colours, page palette and the custom controls
+    function themeParams() {
+      if (state.theme === 'classic') return ''; // no parameter keeps existing embeds identical
+      let query = `&theme=${state.theme}`;
+      if (state.theme === 'custom') for (const key of KEYS) query += `&${key}=${state.colors[key].slice(1)}`;
+      return query;
+    }
+
+    function updateContrastNote() {
+      const c = state.colors;
+      const problems = [['Text', c.text], ['Accent', c.accent]]
+        .map(([name, color]) => [name, contrast(color, c.bg)])
+        .filter(([, ratio]) => ratio < 4.5)
+        .map(([name, ratio]) => `${name} on the background is ${ratio.toFixed(1)}:1.`);
+      contrastNote.classList.toggle('warn', problems.length > 0);
+      contrastNote.textContent = problems.length
+        ? `${problems.join(' ')} Aim for 4.5 or higher so the card stays readable.`
+        : 'Contrast looks good.';
+    }
+
+    function applyTheme() {
+      const colors = state.theme === 'custom' ? state.colors : THEMES[state.theme];
+      const root = document.documentElement;
+      // Custom cards show their exact colours; the page itself picks dark or light so it stays readable.
+      root.dataset.chrome = state.theme === 'custom' ? (luminance(colors.bg) > 0.4 ? 'light' : 'dark') : state.theme;
+      root.style.setProperty('--card-bg', colors.bg);
+      root.style.setProperty('--card-border', colors.border);
+      root.style.setProperty('--card-text', colors.text);
+      $('theme-color').content = getComputedStyle(document.body).backgroundColor;
+
+      custom.hidden = state.theme !== 'custom';
+      for (const swatch of swatches) {
+        swatch.value = state.colors[swatch.dataset.key];
+        swatch.nextElementSibling.textContent = state.colors[swatch.dataset.key].toUpperCase();
+      }
+      if (state.theme === 'custom') updateContrastNote();
+    }
+
+    function refresh() {
+      if (loading) rerun = true;
+      else if (shownUsername) generate(shownUsername);
+    }
+
+    for (const radio of form.elements.theme) {
+      radio.addEventListener('change', () => {
+        if (state.theme !== 'custom' && radio.value === 'custom' && !customTouched) {
+          seedColors(state.theme); // start from the theme they were on
+        }
+        state.theme = radio.value;
+        applyTheme();
+        refresh();
+      });
+    }
+
+    for (const swatch of swatches) {
+      swatch.addEventListener('input', () => {
+        state.colors[swatch.dataset.key] = toHex6(swatch.value);
+        customTouched = true;
+        applyTheme();
+        clearTimeout(debounce);
+        debounce = setTimeout(refresh, 400);
+      });
+    }
+
+    // ---- form
     // Accepts a bare username, @username, or a pasted profile URL.
     function normalizeUsername(value) {
       return value.trim()
@@ -399,6 +642,7 @@
     }
 
     function fail(message) {
+      shownUsername = '';
       setStatus(message, true);
       showPlaceholder();
       history.replaceState(null, '', location.pathname);
@@ -406,17 +650,18 @@
     }
 
     function showResult(username, blob) {
-      const cardUrl = `${location.origin}/generate-card?username=${encodeURIComponent(username)}`;
+      const cardUrl = `${location.origin}/generate-card?username=${encodeURIComponent(username)}${themeParams()}`;
       const profileUrl = `https://www.hackerrank.com/profile/${encodeURIComponent(username)}`;
       const alt = `HackerRank stats for ${username}`;
 
       if (blobUrl) URL.revokeObjectURL(blobUrl);
       blobUrl = URL.createObjectURL(blob);
+      shownUsername = username;
 
       card.src = blobUrl;
       card.alt = alt;
       $('markdown').textContent = `[![${alt}](${cardUrl})](${profileUrl})`;
-      $('html').textContent = `<a href="${profileUrl}"><img src="${cardUrl}" alt="${alt}" width="600"></a>`;
+      $('html').textContent = `<a href="${profileUrl}"><img src="${cardUrl.replaceAll('&', '&amp;')}" alt="${alt}" width="600"></a>`;
       download.href = blobUrl;
       download.download = `hackerrank-${username}.svg`;
 
@@ -424,7 +669,7 @@
       card.hidden = false;
       embed.hidden = false;
       setStatus(`Card ready for ${username}.`);
-      history.replaceState(null, '', `?username=${encodeURIComponent(username)}`);
+      history.replaceState(null, '', `?username=${encodeURIComponent(username)}${themeParams()}`);
 
       // In the one-column layout the card lands below the fold, so bring it into view.
       if (matchMedia('(max-width: 899px)').matches) {
@@ -437,6 +682,7 @@
     async function generate(username) {
       if (loading) return;
       loading = true;
+      currentUsername = username;
       input.readOnly = true; // keeps the field and the card in step until this request ends
       submit.setAttribute('aria-busy', 'true');
       showcase.setAttribute('aria-busy', 'true');
@@ -445,7 +691,7 @@
       showPlaceholder();
 
       try {
-        const response = await fetch(`/generate-card?username=${encodeURIComponent(username)}`, {
+        const response = await fetch(`/generate-card?username=${encodeURIComponent(username)}${themeParams()}`, {
           signal: AbortSignal.timeout(25000),
         });
         if (response.ok) {
@@ -462,6 +708,10 @@
         submit.removeAttribute('aria-busy');
         showcase.removeAttribute('aria-busy');
         submit.textContent = 'Generate card';
+        if (rerun) { // the theme changed while this card was loading
+          rerun = false;
+          generate(currentUsername);
+        }
       }
     }
 
@@ -488,7 +738,18 @@
       }
     });
 
-    const initial = normalizeUsername(new URLSearchParams(location.search).get('username') || '');
+    // ---- start-up: restore a shared link
+    const params = new URLSearchParams(location.search);
+    const linkTheme = params.get('theme');
+    if (linkTheme === 'dark' || linkTheme === 'light' || linkTheme === 'custom') state.theme = linkTheme;
+    for (const key of KEYS) {
+      const color = toHex6(params.get(key));
+      if (color) { state.colors[key] = color; customTouched = true; }
+    }
+    form.elements.theme.value = state.theme;
+    applyTheme();
+
+    const initial = normalizeUsername(params.get('username') || '');
     if (initial) {
       input.value = initial;
       generate(initial);
