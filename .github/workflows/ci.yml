@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Make sure node_modules is not committed
+        run: |
+          if [ -n "$(git ls-files node_modules | head -1)" ]; then
+            echo "node_modules is tracked by git. Run: git rm -r --cached node_modules"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - run: npm test
+
+      # Offline on purpose: a HackerRank outage should not fail a pull request.
+      - name: Start the app and check it responds
+        run: |
+          node api/app.js &
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null http://localhost:3000/ && break
+            sleep 0.5
+          done
+
+          check() { # name, expected status, url, [text the body must contain]
+            body=$(curl -s -w '\n%{http_code}' "$3")
+            code=${body##*$'\n'}
+            if [ "$code" != "$2" ]; then echo "FAIL $1: expected $2, got $code"; exit 1; fi
+            if [ -n "$4" ] && ! printf '%s' "$body" | grep -q "$4"; then echo "FAIL $1: body is missing '$4'"; exit 1; fi
+            echo "ok   $1"
+          }
+
+          check "home page" 200 "http://localhost:3000/" "Show your"
+          check "missing username" 400 "http://localhost:3000/generate-card" "Enter a HackerRank username"
+          check "invalid username" 400 "http://localhost:3000/generate-card?username=a%3Cb" "letters, numbers"
+          check "unknown route" 404 "http://localhost:3000/nope" "Route not found"
+
+      - name: Stop the app
+        if: always()
+        run: pkill -f "node api/app.js" || true
