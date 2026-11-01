@@ -2,316 +2,498 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HackerRank Stats Card Generator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ant-design/4.16.13/antd.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HackerRank Stats Card</title>
+  <meta name="description" content="Turn your HackerRank badges into a card you can paste into your GitHub profile README.">
+  <meta name="theme-color" content="#DDEBE1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230F3D2E' d='M12 0l10.4 6v12L12 24 1.6 18V6z'/%3E%3Cpath stroke='%23E9BE5A' stroke-width='3' d='M8 6.5v11M16 6.5v11M8 12h8'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pine: #0F3D2E;
+      --celadon: #DDEBE1;
+      --celadon-deep: #CFE2D6;
+      --porcelain: #F6FAF6;
+      --moss: #47645A;
+      --brass: #E9BE5A;
+      --garnet: #A8322A;
+      --gutter: 16px;
+      --lattice: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96'%3E%3Cpath fill='none' stroke='%230F3D2E' stroke-opacity='.09' d='M28 0l28 16v32L28 64 0 48V16zM28 64v32M0 48v0M56 48v0'/%3E%3C/svg%3E");
+    }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #6e7f9d, #8c9bde);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+    *, *::before, *::after { box-sizing: border-box; }
 
-        .container {
-            background-color: #fff;
-            width: 100%;
-            max-width: 650px;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--celadon);
+      color: var(--pine);
+      font: 400 1.0625rem/1.5 'Atkinson Hyperlegible', system-ui, sans-serif;
+    }
 
-        .container:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
-        }
+    a { color: inherit; text-underline-offset: 2px; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    :focus-visible { outline: 3px solid var(--pine); outline-offset: 2px; }
 
-        .header img {
-            height: 120px;
-            width: auto;
-            margin-right: 5px;
-        }
+    [hidden] { display: none !important; }
 
-        .header h1 {
-            font-size: 1.8em;
-            color: #333;
-            font-weight: 400;
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            height: 80px;
-        }
+    .page {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      min-height: inherit;
+    }
 
+    main { display: contents; }
 
-        .form-section {
-            margin-bottom: 20px;
-        }
+    .intro {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 20px var(--gutter) 24px;
+    }
 
-        .form-section label {
-            font-size: 1.1em;
-            margin-bottom: 10px;
-            display: block;
-            color: #333;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 24px;
+      font-weight: 700;
+    }
 
-        .form-section input {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #dcdcdc;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
+    .brand svg { width: 22px; height: 26px; flex: none; }
 
-        .form-section input:focus {
-            border-color: #1890ff;
-            box-shadow: 0 0 10px rgba(24, 144, 255, 0.4);
-        }
+    h1 {
+      margin: 0;
+      font: 800 clamp(2.75rem, 13vw, 4.75rem)/.94 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
+      letter-spacing: -.005em;
+      text-wrap: balance;
+    }
 
-        .form-section button {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            background-color: #1890ff;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    .lede {
+      max-width: 34ch;
+      margin: 16px 0 28px;
+      color: var(--moss);
+      font-size: 1.125rem;
+    }
 
-        .form-section button:hover {
-            background-color: #40a9ff;
-        }
+    form { max-width: 28rem; }
 
-        .output-section {
-            margin-top: 20px;
-            text-align: center;
-            color: #333;
-            font-size: 1.2em;
-        }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
 
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #555;
-        }
+    .field {
+      display: flex;
+      align-items: center;
+      min-height: 52px;
+      padding-left: 14px;
+      background: var(--porcelain);
+      border: 2px solid var(--pine);
+      border-radius: 10px;
+    }
 
-        .footer a {
-            color: #1890ff;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
+    .field:focus-within { outline: 3px solid var(--pine); outline-offset: 2px; }
 
-        .footer a:hover {
-            color: #40a9ff;
-        }
+    .field[data-invalid] { border-color: var(--garnet); }
 
-        .footer p {
-            margin-top: 10px;
-        }
+    .field span { flex: none; color: var(--moss); }
 
-        .footer span {
-            font-weight: bold;
-        }
+    input {
+      flex: 1;
+      min-width: 0;
+      height: 48px;
+      padding: 0 12px 0 0;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--pine);
+      font: inherit;
+      font-size: max(16px, 1em); /* below 16px iOS zooms on focus */
+      font-weight: 700;
+    }
 
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 30px;
-            }
+    input:focus-visible { outline: none; } /* .field draws the ring */
 
-            .header h1 {
-                font-size: 2em;
-            }
+    .primary {
+      display: block;
+      width: 100%;
+      min-height: 52px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--pine);
+      color: var(--porcelain);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
-            .form-section input,
-            .form-section button {
-                padding: 10px;
-                font-size: 14px;
-            }
+    .primary:hover { background: #17533F; }
 
-            .footer p {
-                font-size: 12px;
-            }
-        }
+    .primary[aria-busy="true"] { opacity: .75; cursor: progress; }
 
-        @media (max-width: 480px) {
-            .header img {
-                max-width: 60px;
-            }
+    .status {
+      min-height: 1.5em;
+      margin: 12px 0 0;
+      color: var(--moss);
+    }
 
-            .header h1 {
-                font-size: 1.8em;
-            }
+    .status.error { color: var(--garnet); font-weight: 700; }
 
-            .form-section input,
-            .form-section button {
-                padding: 8px;
-                font-size: 13px;
-            }
+    footer {
+      min-width: 0;
+      padding: 24px var(--gutter);
+      color: var(--moss);
+      font-size: .9375rem;
+    }
 
-            .footer p {
-                font-size: 10px;
-            }
-        }
-    </style>
+    footer p { max-width: 44ch; margin: 0; }
+
+    .stage {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      min-width: 0;
+      padding: 28px var(--gutter) 36px;
+      background: var(--celadon-deep) var(--lattice);
+    }
+
+    .showcase, .embed {
+      width: 100%;
+      max-width: 600px;
+      margin-inline: auto;
+    }
+
+    .showcase { scroll-margin-top: 16px; }
+
+    .card, .ghost {
+      display: block;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 14px 22px rgb(15 61 46 / .28));
+    }
+
+    .card { animation: settle .45s cubic-bezier(.2, .8, .25, 1); }
+
+    @keyframes settle {
+      from { opacity: 0; transform: translateY(12px) scale(.98); }
+    }
+
+    .placeholder p {
+      margin: 12px 0 0;
+      color: var(--moss);
+      text-align: center;
+    }
+
+    .placeholder .bar { fill: var(--porcelain); opacity: .16; }
+
+    .placeholder .hex { opacity: .85; }
+
+    [aria-busy="true"] .placeholder .hex {
+      animation: pulse 1.2s ease-in-out infinite;
+      animation-delay: calc(var(--i) * .12s);
+    }
+
+    @keyframes pulse {
+      50% { opacity: .3; }
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+      line-height: 1.25;
+    }
+
+    .snippet { margin-bottom: 16px; }
+
+    .snippet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .snippet-head strong { font-weight: 700; }
+
+    pre {
+      margin: 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--porcelain);
+      font: .875rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 14px;
+      border: 2px solid var(--pine);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--pine);
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .secondary:hover { background: var(--pine); color: var(--porcelain); }
+
+    @media (min-width: 900px) {
+      .page {
+        grid-template-columns: minmax(380px, 5fr) 7fr;
+        grid-template-rows: 1fr auto;
+      }
+
+      .stage { grid-area: 1 / 2 / 3 / 3; }
+
+      .intro { padding: 32px clamp(32px, 4vw, 64px) 32px; }
+
+      .brand { margin-bottom: clamp(24px, 6vh, 96px); }
+
+      h1 { font-size: clamp(4.5rem, 6vw, 7rem); }
+
+      footer { padding: 0 clamp(32px, 4vw, 64px) 32px; }
+
+      .stage {
+        justify-content: center;
+        padding: 48px clamp(24px, 4vw, 64px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, [aria-busy="true"] .placeholder .hex { animation: none; }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="page">
+    <main>
+    <div class="intro">
+      <p class="brand">
+        <svg viewBox="0 0 22 26" aria-hidden="true">
+          <path fill="#0F3D2E" d="M11 0l11 6.5v13L11 26 0 19.5v-13z" />
+          <path stroke="#E9BE5A" stroke-width="3" d="M7 7.5v11M15 7.5v11M7 13h8" />
+        </svg>
+        HackerRank Stats Card
+      </p>
 
-    <div class="container">
-        <div class="header">
-            <img src="https://i.postimg.cc/4y1Dpxv4/hackerrank.jpg" alt="HackerRank Logo">
-            <h1> Stats Card Generator</h1>
+      <h1>Show your HackerRank badges on GitHub</h1>
+      <p class="lede">Enter your username to get a card you can paste into your profile README.</p>
+
+      <form id="form" novalidate>
+        <label for="username">HackerRank username</label>
+        <div class="field" id="field">
+          <span aria-hidden="true">hackerrank.com/</span>
+          <input id="username" name="username" type="text" autocomplete="off" autocapitalize="none"
+            autocorrect="off" spellcheck="false" enterkeyhint="go" aria-describedby="status">
         </div>
+        <button class="primary" id="submit" type="submit">Generate card</button>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </form>
 
-        <form id="generateCardForm" method="GET" class="form-section">
-            <label for="username">Enter your HackerRank Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter Username" required>
-            <button type="submit">Generate Card</button>
-        </form>
-
-        <script>
-            const form = document.getElementById('generateCardForm');
-
-            form.addEventListener('submit', function (event) {
-                event.preventDefault(); // Prevent default form submission
-
-                const username = document.getElementById('username').value;
-
-                if (!username) {
-                    alert("Please enter a username");
-                    return;
-                }
-
-                // Show the spinner
-                const spinnerContainer = document.createElement('div');
-                spinnerContainer.classList.add('spinner-container');
-                spinnerContainer.innerHTML = `
-            <div class="spinner">
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="circle"></div>
-            </div>
-            <p>Generating your stats card...</p>
-        `;
-                document.body.appendChild(spinnerContainer);
-
-                // Update the form's action dynamically
-                this.action = `/generate-card?username=${encodeURIComponent(username)}`;
-                this.submit();
-                
-                // Remove the spinner after 5 seconds
-                setTimeout(() => {
-                    spinnerContainer.remove();
-                    this.reset();
-                }, 5000);
-            });
-
-            // Add spinner styles
-            const style = document.createElement('style');
-            style.innerHTML = `
-        .spinner-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: #fff;
-        }
-
-        .spinner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            width: 80px;
-            height: 80px;
-        }
-
-        .spinner .circle {
-            width: 15px;
-            height: 15px;
-            margin: 0 5px;
-            background: #3498db;
-            border-radius: 50%;
-            animation: bounce 1.5s infinite ease-in-out;
-        }
-
-        .spinner .circle:nth-child(2) {
-            animation-delay: 0.3s;
-        }
-
-        .spinner .circle:nth-child(3) {
-            animation-delay: 0.6s;
-        }
-
-        .spinner .circle:nth-child(4) {
-            animation-delay: 0.9s;
-        }
-
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        .spinner-container p {
-            margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: 500;
-        }
-    `;
-            document.head.appendChild(style);
-        </script>
-
-
-        <div class="output-section">
-            <!-- The generated card will be displayed here -->
-        </div>
-
-        <div class="footer">
-            <p>Made with 💚 by <a href="https://github.com/sun01822" target="_blank">MD. Shariar Hossain Sun</a></p>
-            <p><span>Open Source</span> & <span>Free to Use</span></p>
-        </div>
     </div>
 
+    <section class="stage" aria-label="Your card">
+      <div class="showcase" id="showcase">
+        <div class="placeholder" id="placeholder">
+          <svg class="ghost" viewBox="0 0 600 286" aria-hidden="true">
+            <defs><polygon id="ghost-hex" points="0,-40 34.64,-20 34.64,20 0,40 -34.64,20 -34.64,-20" /></defs>
+            <rect x="1" y="1" width="598" height="284" rx="18" fill="#0F3D2E" stroke="#2C6B53" stroke-width="2" />
+            <rect class="bar" x="28" y="30" width="110" height="14" rx="7" />
+            <rect class="bar" x="462" y="30" width="110" height="14" rx="7" />
+            <rect class="bar" x="28" y="64" width="250" height="26" rx="13" />
+            <rect class="bar" x="28" y="102" width="130" height="14" rx="7" />
+            <use class="hex" href="#ghost-hex" x="82.4" y="176" fill="#E9BE5A" style="--i:0" />
+            <use class="hex" href="#ghost-hex" x="191.2" y="176" fill="#E9BE5A" style="--i:1" />
+            <use class="hex" href="#ghost-hex" x="300" y="176" fill="#C4CDD0" style="--i:2" />
+            <use class="hex" href="#ghost-hex" x="408.8" y="176" fill="#C4CDD0" style="--i:3" />
+            <use class="hex" href="#ghost-hex" x="517.6" y="176" fill="#C98A5E" style="--i:4" />
+            <rect class="bar" x="52" y="234" width="60" height="10" rx="5" />
+            <rect class="bar" x="161" y="234" width="60" height="10" rx="5" />
+            <rect class="bar" x="270" y="234" width="60" height="10" rx="5" />
+            <rect class="bar" x="379" y="234" width="60" height="10" rx="5" />
+            <rect class="bar" x="488" y="234" width="60" height="10" rx="5" />
+          </svg>
+          <p>Your card appears here</p>
+        </div>
+        <img class="card" id="card" alt="" hidden>
+      </div>
+
+      <div class="embed" id="embed" hidden>
+        <h2>Add it to your README</h2>
+        <div class="snippet">
+          <div class="snippet-head">
+            <strong>Markdown</strong>
+            <button class="secondary" type="button" data-copy="markdown" data-label="Markdown">Copy Markdown</button>
+          </div>
+          <pre id="markdown"></pre>
+        </div>
+        <div class="snippet">
+          <div class="snippet-head">
+            <strong>HTML</strong>
+            <button class="secondary" type="button" data-copy="html" data-label="HTML">Copy HTML</button>
+          </div>
+          <pre id="html"></pre>
+        </div>
+        <a class="secondary" id="download">Download SVG</a>
+      </div>
+    </section>
+    </main>
+
+    <footer>
+      <p>Made by <a href="https://github.com/sun01822" target="_blank" rel="noopener">MD. Shariar Hossain Sun</a>. Open source and free to use. Not affiliated with HackerRank.</p>
+    </footer>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const form = $('form');
+    const input = $('username');
+    const field = $('field');
+    const submit = $('submit');
+    const status = $('status');
+    const showcase = $('showcase');
+    const placeholder = $('placeholder');
+    const card = $('card');
+    const embed = $('embed');
+    const download = $('download');
+
+    let loading = false;
+    let blobUrl = '';
+
+    // Accepts a bare username, @username, or a pasted profile URL.
+    function normalizeUsername(value) {
+      return value.trim()
+        .replace(/^(https?:\/\/)?(www\.)?hackerrank\.com\//i, '')
+        .replace(/^profile\//i, '')
+        .replace(/^@/, '')
+        .replace(/[/?#].*$/, '');
+    }
+
+    function setStatus(message, isError = false) {
+      status.textContent = message;
+      status.classList.toggle('error', isError);
+      if (isError) field.dataset.invalid = '';
+      else delete field.dataset.invalid;
+      input.setAttribute('aria-invalid', String(isError));
+    }
+
+    function showPlaceholder() {
+      card.hidden = true;
+      embed.hidden = true;
+      placeholder.hidden = false;
+    }
+
+    function fail(message) {
+      setStatus(message, true);
+      showPlaceholder();
+      history.replaceState(null, '', location.pathname);
+      input.focus();
+    }
+
+    function showResult(username, blob) {
+      const cardUrl = `${location.origin}/generate-card?username=${encodeURIComponent(username)}`;
+      const profileUrl = `https://www.hackerrank.com/profile/${encodeURIComponent(username)}`;
+      const alt = `HackerRank stats for ${username}`;
+
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      blobUrl = URL.createObjectURL(blob);
+
+      card.src = blobUrl;
+      card.alt = alt;
+      $('markdown').textContent = `[![${alt}](${cardUrl})](${profileUrl})`;
+      $('html').textContent = `<a href="${profileUrl}"><img src="${cardUrl}" alt="${alt}" width="600"></a>`;
+      download.href = blobUrl;
+      download.download = `hackerrank-${username}.svg`;
+
+      placeholder.hidden = true;
+      card.hidden = false;
+      embed.hidden = false;
+      setStatus(`Card ready for ${username}.`);
+      history.replaceState(null, '', `?username=${encodeURIComponent(username)}`);
+
+      // In the one-column layout the card lands below the fold, so bring it into view.
+      if (matchMedia('(max-width: 899px)').matches) {
+        input.blur();
+        const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        showcase.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+    }
+
+    async function generate(username) {
+      if (loading) return;
+      loading = true;
+      input.readOnly = true; // keeps the field and the card in step until this request ends
+      submit.setAttribute('aria-busy', 'true');
+      showcase.setAttribute('aria-busy', 'true');
+      submit.textContent = 'Generating card…';
+      setStatus('Fetching your badges from HackerRank…');
+      showPlaceholder();
+
+      try {
+        const response = await fetch(`/generate-card?username=${encodeURIComponent(username)}`, {
+          signal: AbortSignal.timeout(25000),
+        });
+        if (response.ok) {
+          showResult(username, await response.blob());
+        } else {
+          const body = await response.json().catch(() => ({}));
+          fail(body.message || 'The card could not be generated. Try again in a minute.');
+        }
+      } catch {
+        fail('The request did not finish. Check your connection and try again.');
+      } finally {
+        loading = false;
+        input.readOnly = false;
+        submit.removeAttribute('aria-busy');
+        showcase.removeAttribute('aria-busy');
+        submit.textContent = 'Generate card';
+      }
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const username = normalizeUsername(input.value);
+      input.value = username;
+      if (username) generate(username);
+      else fail('Enter your HackerRank username.');
+    });
+
+    embed.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-copy]');
+      if (!button) return;
+      const code = $(button.dataset.copy);
+      try {
+        await navigator.clipboard.writeText(code.textContent);
+        button.textContent = 'Copied';
+        setStatus(`${button.dataset.label} copied.`);
+        setTimeout(() => { button.textContent = `Copy ${button.dataset.label}`; }, 2000);
+      } catch {
+        getSelection().selectAllChildren(code);
+        setStatus('Copy was blocked. The code is selected, so copy it manually.', true);
+      }
+    });
+
+    const initial = normalizeUsername(new URLSearchParams(location.search).get('username') || '');
+    if (initial) {
+      input.value = initial;
+      generate(initial);
+    }
+  </script>
 </body>
 
 </html>
