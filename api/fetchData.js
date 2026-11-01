@@ -1,90 +1,77 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const fs = require('fs');
-const path = require('path');
 
-// Fetch user profile data from HackerRank
-async function fetchHackerrankData(username) {
-  const url = `https://www.hackerrank.com/${username}`;
-  const headers = {
-    "User-Agent": process.env.HACKERRANK_CARD_USER_AGENT || "HackerRankCardApp"
-  };
+const TIMEOUT_MS = 8000;
+const USERNAME_PATTERN = /^[A-Za-z0-9_][\w.-]{0,63}$/;
 
+function httpError(status, message) {
+  return Object.assign(new Error(message), { status });
+}
+
+function isValidUsername(username) {
+  return typeof username === "string" && USERNAME_PATTERN.test(username);
+}
+
+// HackerRank answers 200 for everything: unknown names and site routes like "contests" are
+// redirected away from /profile/<name>, so only real users end up on a /profile/ path.
+function isProfilePath(path) {
+  return /^\/profile\/[^/]+$/.test(path ?? "");
+}
+
+// Real titles look like "Full Name - username | HackerRank".
+function parseFullName(title, username) {
+  const separator = title.toLowerCase().lastIndexOf(` - ${username.toLowerCase()} |`);
+  return separator > 0 ? title.slice(0, separator).trim() : "";
+}
+
+async function fetchIcon(url, title) {
+  if (!url?.startsWith("https://")) return "";
   try {
-    // Fetch the HTML page
-    const response = await axios.get(url, { headers });
-    if (response.status !== 200) {
-      throw new Error("User not found or request failed");
-    }
-
-    const $ = cheerio.load(response.data);
-
-    // Extract profile name from the title
-    const title = $("title").text().trim();
-    const profileName = title.includes(" - ") ? title.split(" - ")[0] : "N/A";
-
-    // Extract badges
-    const badges = [];
-    // const badgeIconMap = new Map();
-    const badgeElements = $(".hacker-badge").toArray();
-    for (const element of badgeElements) {
-      const badgeElement = $(element);
-
-      // Badge title
-      const badgeTitle = badgeElement.find(".badge-title").text().trim() || "N/A";
-
-      // Badge icon URL
-      const badgeIcon = badgeElement.find(".badge-icon");
-      const badgeIconUrl = badgeIcon.attr("href") || "N/A";
-
-      // get the image and store the badge with name like "10_days_of_javascript"
-      const badgeIconName = badgeIconUrl.split("/").pop().split(".")[0];
-      const publicDir = path.join(__dirname, '/public');
-      const imagePath = path.join(publicDir, `${badgeIconName}.svg`);
-
-      // Ensure the public directory exists
-      if (!fs.existsSync(publicDir)) {
-        fs.mkdirSync(publicDir, { recursive: true });
-      }
-
-      try {
-        // Download and save the image
-        const imageResponse = await axios.get(badgeIconUrl, { responseType: 'arraybuffer' });
-        fs.writeFileSync(imagePath, imageResponse.data);
-      } catch (error) {
-        console.error(`Error downloading image for badge ${badgeTitle}: ${error.message}`);
-      }
-
-      // Extract the gradient from the 'fill' attribute in the <path> element
-      const badgePath = badgeElement.find("path");
-      const badgeGradient = badgePath.attr("fill")?.match(/url\(#(.+)\)/)?.[1] || "N/A";
-
-      // Extract the number of stars for the badge
-      const starCount = badgeElement.find(".badge-star").length || 0;
-
-      // Append badge details
-      badges.push({
-        title: badgeTitle,
-        icon_url: badgeIconUrl,
-        gradient: badgeGradient,
-        stars: starCount,
-        imagePath: imagePath,
-      });
-
-    }
-
-    // Sort badges by stars in descending order
-    badges.sort((a, b) => b.stars - a.stars);
-
-    // Return structured data
-    return {
-      username,
-      full_name: profileName,
-      badges,
-    };
+    const { data } = await axios.get(url, { responseType: "arraybuffer", timeout: TIMEOUT_MS });
+    return `data:image/svg+xml;base64,${Buffer.from(data).toString("base64")}`;
   } catch (error) {
-    throw new Error(`Failed to fetch HackerRank data: ${error.message}`);
+    console.error(`Error downloading icon for badge ${title}: ${error.message}`);
+    return "";
   }
 }
 
-module.exports = { fetchHackerrankData };
+async function fetchHackerrankData(username) {
+  if (!isValidUsername(username)) {
+    throw httpError(400, "Usernames can only contain letters, numbers, dots, hyphens and underscores.");
+  }
+
+  let response;
+  try {
+    response = await axios.get(`https://www.hackerrank.com/profile/${encodeURIComponent(username)}`, {
+      headers: { "User-Agent": process.env.HACKERRANK_CARD_USER_AGENT || "HackerRankCardApp" },
+      timeout: TIMEOUT_MS,
+    });
+  } catch (error) {
+    if (error.response?.status === 404) throw notFound(username);
+    throw httpError(502, "HackerRank didn't respond. Try again in a minute.");
+  }
+
+  if (!isProfilePath(response.request?.path)) throw notFound(username);
+
+  const $ = cheerio.load(response.data);
+
+  const badges = await Promise.all($(".hacker-badge").toArray().map(async (element) => {
+    const badge = $(element);
+    const title = badge.find(".badge-title").text().trim() || "Badge";
+    return {
+      title,
+      iconData: await fetchIcon(badge.find(".badge-icon").attr("href"), title),
+      stars: badge.find(".badge-star").length,
+    };
+  }));
+
+  badges.sort((a, b) => b.stars - a.stars);
+
+  return { username, full_name: parseFullName($("title").text().trim(), username), badges };
+}
+
+function notFound(username) {
+  return httpError(404, `No HackerRank profile found for "${username}". Check the spelling in your profile URL.`);
+}
+
+module.exports = { fetchHackerrankData, isValidUsername, isProfilePath, parseFullName };
